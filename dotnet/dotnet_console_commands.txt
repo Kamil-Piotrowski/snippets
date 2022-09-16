@@ -1,0 +1,25 @@
+# create solution
+
+mkdir example
+cd example
+dotnet new sln
+
+# create projects
+
+mkdir exampleApi
+cd ./exampleApi
+dotnet new webapi
+
+cd ..
+mkdir exampleLib
+cd ./exampleLib
+dotnet new classlib
+
+# add projects to solution and add reference to lib to the api
+
+cd ..
+dotnet sln ./example.sln add ./exampleApi/exampleApi.csproj
+dotnet sln ./example.sln add ./exampleLib/exampleLib.csproj
+
+
+dotnet add ./exampleApi/exampleApi.csproj reference ./exampleLib/exampleLib.csproj

@@ -1,0 +1,31 @@
+Without this config, container with .net we app will fail (unless started from visual studio)
+
+# clean dev certificates
+dotnet dev-certs https --clean
+
+# new cert
+dotnet dev-certs https -ep C:\Users\k.piotrowski\source\repos\dev-cert.pfx -p dupa123
+
+# then either docker run with following:
+docker run --name c2 -p 8080:80 -p 8081:443 -e Kestrel__Certificates__Default__Path=/app/Infrastructure/Certificate/dev-cert.pfx -e Kestrel__Certificates__Default__Password=dupa123 -e "ASPNETCORE_URLS=https://+;http://+" -v C:\Users\k.piotrowski\source\repos\dev-certs\:/app/Infrastructure/Certificate onionweb:latest
+
+# or docker compose with following:
+
+
+version: '3.4'
+
+services:
+  webapp:
+    build: .
+    ports:
+      - "8080:80"
+      - "8081:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=dupa123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/Infrastructure/Certificate/dev-cert.pfx
+    volumes:
+      - type: bind
+        source: .\dev-certs\
+        target: /app/Infrastructure/Certificate
